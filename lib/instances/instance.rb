@@ -1,9 +1,7 @@
 # encoding: UTF-8
 
 require 'addressable/uri'
-require 'zip/zipfilesystem'
 require 'rubygems/package'
-require 'zlib'
 require 'open-uri'
 require 'fileutils'
 
@@ -59,25 +57,6 @@ module Factor
           debug "  #{line}"
         end
         debug "parameters: #{parameters}"
-      end
-
-      private
-
-      def targz_to_zip(file)
-        stringio = Zip::ZipOutputStream.write_buffer do |zipio|
-          Gem::Package::TarReader.new(Zlib::GzipReader.open(file.path)) do |tar|
-            tar.each do |entry|
-              zipio.put_next_entry entry.full_name
-              zipio.write entry.read
-            end
-          end
-
-        end
-        stringio.rewind
-        file = File.new(file.path.gsub(/.gz/, '.zip').gsub(/.tar/, ''), 'w+')
-        file.write stringio.read
-        file.rewind
-        file
       end
     end
   end
