@@ -2,10 +2,26 @@ PATH
   remote: .
   specs:
     factor-connector-api (0.0.1)
+      addressable
+      celluloid (~> 0.16.0)
+      rest-client (~> 1.7.2)
+      rubyzip
 
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.3.6)
+    celluloid (0.16.0)
+      timers (~> 4.0.0)
+    hitimes (1.2.2)
+    mime-types (2.3)
+    netrc (0.7.7)
+    rest-client (1.7.2)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
+    rubyzip (1.1.6)
+    timers (4.0.1)
+      hitimes
 
 PLATFORMS
   ruby
