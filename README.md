@@ -91,46 +91,36 @@ To use this gem you need to go into your Connector service and do the following:
 4. If you added multiple files to /lib/factor/connector/ in this gem, you'll need to to repeat #3 for each of those.
 
 ## The Connector API
+More here: [https://github.com/factor-io/connector-api/wiki/Connector-API-DSL](https://github.com/factor-io/connector-api/wiki/Connector-API-DSL)
 
-### Factor::Connector.service(id)
-This is the top-level definition of a new service. It takes a string ID and a block. The string ID is the ID you will use to address this service. The ID is used by the connector service to generate a URL like /v0.4/:myservice. When defining the connector.yml file in your workflow directory, it will use this URL to reference the specific service.
 
-### action
-`action` and `listener` are the two highest level capabilities within a service definition. An action is a method you call to take an action. It is short lived and ephemeral, like sending a message to Hipchat.
+## Testing
+There is no particulare test framework we recommend; however, you will need to know how to call the new service you defined. 
 
-### action_callback
-An action callback is what you run when the action is done processing. It takes one variable, a hash or an array. That information becomes available in the workflow for the proceeding steps.
+```ruby
+require 'connector-api'
+Dir.glob('./lib/factor/connector/*.rb').each { |f| require f }
 
-### listener
-The `listener` is one of two of the high level capabilities within a service. It is designed to be long-living and waiting for events. For example, listening for a particulare message in a chat room, or a listener for a Github push event, or a timer which triggers every 5 mintues. Each of these live for a long time, but then trigger on a particular event.
+service_manager  = Factor::Connector.get_service_manager('myservice')
+service_instance = service_manager.instance
 
-### start_workflow
-A `start_workflow` event only appears within the `listener` block. You can call it multiple times. A better name for it might be "trigger", as it triggers the execution of a workflow.
+service_instance.callback = proc do |action_response|
+  puts action_response
+end
 
-### start
-The 'start' block within a listener is used to perform any work and start the listening event. For example, it may call into Github and register a post-receive web hook.
+service_instance.call_action('list',params)
 
-The params are all the parameters that the user passed into the call, plus the credentials from the credentials.yml file for this particular service.
+# sleep 5
+```
 
-    start do |params|
-      # setup the listener
-    end
+The `get_service_manager` gets you the Service Manager for your service. Each service defined is defined as a singelton instance of ServiceManger. The call to `service_manager.instance` instantiates a new instance of ServiceInstance of your service. This is used to maintain state for this instance as you may have multiple instances with different callbacks and parameters. In other words, two different instances can have two different callbacks and execute two different actions in parallel.
 
-### stop
-The stop block is responsible for tearing down anything that was created by the start block. For example, if you registered a web hook with `start`, use this to unregister. The "params" passed in will be the same values you received in the "start" block.
+The `callback` block will execute every time a new message comes in form your service. Remember how you used the methods like `info`, `fail`, `error`, and `action_callback`, well all of those are now triggering a callback. The response will be a Hash. Here is an example of one of the outputs.
 
-  stop do |params|
-    # tear down the artifacts created by start
-  end
+    {:type=>"log", :status=>"info", :message=>"Initializing connection settings"}
+    {:type=>"log", :status=>"info", :message=>"Retreiving list of servers"}
+    {:type=>"return", :payload=>[{:state=>"ACTIVE", :updated=>"2014-09-30T17:15:16Z", :host_id=>"ffec79d5145436b031973879740ce2736c21d3da913deaa0bccf6561", :addresses=>{"public"=>[{"version"=>6, "addr"=>"2001:4800:7813:516:d02:b50b:5bdb:71ab"}, {"version"=>4, "addr"=>"192.237.202.61"}], "private"=>[{"version"=>4, "addr"=>"10.183.7.124"}]}, :links=>[{"href"=>"https://dfw.servers.api.rackspacecloud.com/v2/843739/servers/1d8173b8-6efc-4f40-a134-d5cff5c1fe4a", "rel"=>"self"}, {"href"=>"https://dfw.servers.api.rackspacecloud.com/843739/servers/1d8173b8-6efc-4f40-a134-d5cff5c1fe4a", "rel"=>"bookmark"}], :key_name=>"Factor", :image_id=>"34437b38-6df1-4efa-bded-f637d8864b83", :state_ext=>nil, "OS-EXT-STS:vm_state"=>"active", :flavor_id=>"3", :id=>"1d8173b8-6efc-4f40-a134-d5cff5c1fe4a", :user_id=>"10045058", :name=>"console", :created=>"2014-09-30T17:13:26Z", :tenant_id=>"843739", :disk_config=>"AUTO", :ipv4_address=>"192.237.202.61", :ipv6_address=>"2001:4800:7813:516:d02:b50b:5bdb:71ab", :progress=>100, "OS-EXT-STS:power_state"=>1, :config_drive=>""}]}
 
-### web_hook
 
-### logging - info, warn, error
-You can use info, warn, and error, to send a log message. This will appear in the output of the workflow as it is executing.
+The `callback` and `call_action` methods are both asynchronous, that is, they will return immidiately. When testing you can use the [Wrong gem](https://github.com/sconover/wrong) and the `eventually` method to test for particular responses asynchronously.
 
-    info "All is good"
-    warn "There is a problem, but the workflow is still running fine"
-    error "Somethings busted"
-
-### fail
-Using `fail`
