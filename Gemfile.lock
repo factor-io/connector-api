@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    factor-connector-api (0.0.6)
+    factor-connector-api (0.0.7)
       addressable (~> 2.3.6)
       celluloid (~> 0.16.0)
       rest-client (~> 1.7.2)
