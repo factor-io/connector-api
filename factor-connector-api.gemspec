@@ -3,13 +3,12 @@ $LOAD_PATH.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = 'factor-connector-api'
-  s.version       = '0.0.7'
+  s.version       = '0.0.8'
   s.platform      = Gem::Platform::RUBY
   s.authors       = ['Maciej Skierkowski']
   s.email         = ['maciej@factor.io']
   s.homepage      = 'https://factor.io'
-  s.summary       = 'Timer Factor.io Connector'
-  s.description   = 'Timer Factor.io Connector'
+  s.summary       = 'Factor.io Connector API Library'
   
   s.files         = Dir.glob('./lib/**/*.rb')
   s.test_files    = Dir.glob('./spec/*.rb')

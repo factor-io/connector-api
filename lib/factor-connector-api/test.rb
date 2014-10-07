@@ -10,10 +10,10 @@ end
 
 module Factor::Connector
   class ServiceInstance
-    include RSpec
+    include Wrong
     
     def expect_response(options={}, &block)
-      Wrong::eventually options do
+      eventually options do
         @logs.any? do |log|
           block.call(log)
         end
@@ -22,34 +22,38 @@ module Factor::Connector
 
     def expect_return(options={})
       expect_response(options) do |log|
-        log[:type]=='return' && log[:payload]
+        assert { log[:type] == 'return' } 
+        assert { log[:payload] == log[:type] }
       end
     end
 
     def expect_fail(options={})
       expect_response(options) do |log|
-        log[:type]=='fail'
+        assert { log[:type] == 'fail' }
       end
     end
 
     def expect_info(options={})
       expect_response(options) do |log|
-        logs_present = log[:type]=='log' && log[:status]=='info'
-        options[:message] ? log[:message] == options[:message] : logs_present
+        assert { log[:type] == 'log' }
+        assert { log[:status] == 'info' } if log[:type] == 'log'
+        assert { log[:message] == options[:message] } if options[:message] && log[:type]=='log' && log[:status]=='info'
       end
     end
 
     def expect_warn(options={})
       expect_response(options) do |log|
-        logs_present = log[:type]=='log' && log[:status]=='warn'
-        options[:message] ? log[:message] == options[:message] : logs_present
+        assert { log[:type] == 'log' }
+        assert { log[:status] == 'warn' } if log[:type] == 'log'
+        assert { log[:message] == options[:message] } if options[:message] && log[:type]=='log' && log[:status]=='warn'
       end
     end
 
     def expect_error(options={})
       expect_response(options) do |log|
-        logs_present = log[:type]=='log' && log[:status]=='error'
-        options[:message] ? log[:message] == options[:message] : logs_present
+        assert { log[:type] == 'log' }
+        assert { log[:status] == 'error' } if log[:type] == 'log'
+        assert { log[:message] == options[:message] } if options[:message] && log[:type]=='log' && log[:status]=='error'
       end
     end
 
@@ -59,7 +63,7 @@ module Factor::Connector
       self.callback = proc do |action_response|
         @logs << action_response
       end
-      call_action('list',params)
+      call_action(action_name,params)
 
       instance_exec &block
     end
