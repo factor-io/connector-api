@@ -1,5 +1,4 @@
 require 'rspec'
-require 'wrong'
 require_relative '../factor-connector-api.rb'
 
 module Factor::Connector::Test
@@ -10,51 +9,74 @@ end
 
 module Factor::Connector
   class ServiceInstance
-    include Wrong
-    
-    def expect_response(options={}, &block)
-      eventually options do
-        @logs.any? do |log|
-          block.call(log)
+    def eventually(&block)
+      found = false
+      timeout = 10
+      frequency = 4.0
+      pause = 1 / frequency
+      count = timeout * frequency
+      (0..count).each do |tick|
+        any = begin
+          block.call
+        rescue
+          false
         end
+
+        if any
+          found = true
+          break
+        end
+        sleep pause
       end
+      found
     end
 
-    def expect_return(options={})
-      expect_response(options) do |log|
-        assert { log[:type] == 'return' } 
-        assert { log[:payload] == log[:type] }
+    def expect_in_logs(expected_hash={})
+      match = {}
+      found = eventually do
+        any = @logs.any? do |actual_output|
+          all_equal = true
+          expected_hash.each_pair do |key, expected_value|
+            all_equal = false unless actual_output[key] == expected_value
+          end
+          match = actual_output if all_equal
+          all_equal
+        end
       end
+
+      raise "No match found for #{expected_hash}. Last line was #{@logs.last}" unless found
+      match if found
+    end
+
+    def expect_return(expected_values={})
+      compares = { type: 'return' }
+      compares[:payload] = expected_values if expected_values && expected_values!={}
+      expect_in_logs compares
     end
 
     def expect_fail(options={})
-      expect_response(options) do |log|
-        assert { log[:type] == 'fail' }
-      end
+      expect_in_logs type: 'fail'
     end
 
-    def expect_info(options={})
-      expect_response(options) do |log|
-        assert { log[:type] == 'log' }
-        assert { log[:status] == 'info' } if log[:type] == 'log'
-        assert { log[:message] == options[:message] } if options[:message] && log[:type]=='log' && log[:status]=='info'
-      end
+    def expect_log(status,expected_values={})
+      compares = {
+        type:'log',
+        status:status
+      }
+      compares[:message] = expected_values[:message] if expected_values[:message]
+      expect_in_logs compares
     end
 
-    def expect_warn(options={})
-      expect_response(options) do |log|
-        assert { log[:type] == 'log' }
-        assert { log[:status] == 'warn' } if log[:type] == 'log'
-        assert { log[:message] == options[:message] } if options[:message] && log[:type]=='log' && log[:status]=='warn'
-      end
+    def expect_info(expected_values={})
+      expect_log('info',expected_values)
     end
 
-    def expect_error(options={})
-      expect_response(options) do |log|
-        assert { log[:type] == 'log' }
-        assert { log[:status] == 'error' } if log[:type] == 'log'
-        assert { log[:message] == options[:message] } if options[:message] && log[:type]=='log' && log[:status]=='error'
-      end
+    def expect_warn(expected_values={})
+      expect_log('info',expected_values)
+    end
+
+    def expect_error(expected_values={})
+      expect_log('error',expected_values)
     end
 
     def test_action(action_name, params={}, &block)
