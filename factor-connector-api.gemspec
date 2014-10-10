@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_runtime_dependency 'addressable', '~> 2.3.6'
-  s.add_runtime_dependency 'rest-client', '~> 1.7.2'
+  s.add_runtime_dependency 'rest-client', '~> 1.6.7'
   s.add_runtime_dependency 'celluloid', '~> 0.16.0'
 
 
