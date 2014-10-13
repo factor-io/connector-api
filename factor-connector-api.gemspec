@@ -3,7 +3,7 @@ $LOAD_PATH.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = 'factor-connector-api'
-  s.version       = '0.0.9'
+  s.version       = '0.0.10'
   s.platform      = Gem::Platform::RUBY
   s.authors       = ['Maciej Skierkowski']
   s.email         = ['maciej@factor.io']
@@ -15,10 +15,7 @@ Gem::Specification.new do |s|
   
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'addressable', '~> 2.3.6'
-  s.add_runtime_dependency 'rest-client', '~> 1.6.7'
   s.add_runtime_dependency 'celluloid', '~> 0.16.0'
-
 
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.3.0'
   s.add_development_dependency 'rspec', '~> 3.1.0'
