@@ -1,10 +1,5 @@
 # encoding: UTF-8
 
-require 'addressable/uri'
-require 'rubygems/package'
-require 'open-uri'
-require 'fileutils'
-
 require_relative '../errors.rb'
 
 module Factor
