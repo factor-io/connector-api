@@ -1,4 +1,5 @@
 require 'rspec'
+require 'rspec/expectations'
 require_relative '../factor-connector-api.rb'
 
 module Factor::Connector::Test
@@ -9,6 +10,8 @@ end
 
 module Factor::Connector
   class ServiceInstance
+    include RSpec::Matchers
+
     def eventually(&block)
       found = false
       timeout = 10
