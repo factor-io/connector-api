@@ -44,7 +44,13 @@ module Factor::Connector
         end
       end
 
-      raise "No match found for #{expected_hash}. Last line was #{@logs.last}" unless found
+      last_log = if @logs.last[:type]=='log' && @logs.last[:status]=='debug'
+          @logs.select {|log| log[:type] == 'log' && log[:status]=='debug'}.first
+        else
+          @logs.last
+        end
+
+      raise "No match found for #{expected_hash}. Last line was #{last_log}" unless found
       match if found
     end
 

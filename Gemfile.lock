@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    factor-connector-api (0.0.11)
+    factor-connector-api (0.0.12)
       celluloid (~> 0.16.0)
 
 GEM
