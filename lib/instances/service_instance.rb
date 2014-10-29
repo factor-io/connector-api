@@ -39,6 +39,7 @@ module Factor
         action_instance.callback    = @callback
         action_instances[action_id] = action_instance
         action_instance.async.start(params)
+        action_instance
       end
 
       def start_listener(listener_id,params)
@@ -49,6 +50,7 @@ module Factor
         listener_instance.callback    = @callback
         @listener_instances[listener_id]=listener_instance
         listener_instance.async.start(params)
+        listener_instance
       end
 
       def stop_listener(listener_id)
