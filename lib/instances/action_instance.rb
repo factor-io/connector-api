@@ -8,15 +8,13 @@ module Factor
       attr_accessor :service_id
 
       def start(params)
-        begin
-          self.instance_exec params, &@definition.start
-        rescue Factor::Connector::Error => ex
-          respond type:'fail', message:ex.message
-          exception ex.exception,params:params if ex.exception
-        rescue => ex
-          respond type:'fail', message:"Couldn't run action for unexpected reason. We've been informed and looking into it."
-          exception ex,params:params
-        end
+        self.instance_exec params, &@definition.start
+      rescue Factor::Connector::Error => ex
+        respond type:'fail', message:ex.message
+        exception ex.exception,params:params if ex.exception
+      rescue => ex
+        respond type:'fail', message:"Couldn't run action for unexpected reason. We've been informed and looking into it."
+        exception ex,params:params
       end
 
       def action_callback(params={})
