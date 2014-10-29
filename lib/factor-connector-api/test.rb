@@ -81,7 +81,7 @@ module Factor::Connector
     end
 
     def expect_warn(expected_values={})
-      expect_log('info',expected_values)
+      expect_log('warn',expected_values)
     end
 
     def expect_error(expected_values={})
