@@ -47,7 +47,7 @@ module Factor::Connector
         end
       end
 
-      last_log = if @logs.last[:type]=='log' && @logs.last[:status]=='debug'
+      last_log = if @logs.last && @logs.last[:type]=='log' && @logs.last[:status]=='debug'
           @logs.select {|log| log[:type] == 'log' && log[:status]=='debug'}.first
         else
           @logs.last
