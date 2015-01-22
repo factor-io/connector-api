@@ -4,3 +4,8 @@ rvm:
 env:
   global:
     secure: Sk39TX5v1vIa6nCSQfBlqJenvRXg0DeSXEBZaL/AIUqICOf5iukrrRsJXwpe64C3ceE6k9RKpkfWPb39jmyHre4sHbvj0O/ux34Xw852FWFK0Dp4hHRA7rCvCftmkNnDlr4dl9BgYPKpHpkUAB3RHqeCt111J6DO/MFgdD19FWk=
+deploy:
+  provider: rubygems
+  gem: factor-connector-api
+  api_key:
+    secure: T24epDVon+Cx5yVd02i1ToHjr5pWnMjTCyudzlAXLBF9Rtsta6N6O41RNuHk94KXzoyfS4r8snblzENqR4OFYGE7VkDR1S14nE1rJWM7O9H3ExJh+mPrGtZNQ2Iaxl/a6wGNUb8TQYQEV8v+Qdt7FyFvtESZxHbSClJ7ChOZ1v0=
